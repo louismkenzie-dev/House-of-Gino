@@ -1,13 +1,24 @@
 import { motion } from "framer-motion";
-import { Scissors, Bath, PawPrint, Sparkles, Plus } from "lucide-react";
+import { Scissors, Bath, PawPrint, Sparkles, Plus, ArrowDown } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { services } from "@/lib/site-data";
+import { showcaseByService } from "@/lib/service-showcases";
+import { ServiceShowcase } from "./ServiceShowcase";
 
 const icons = [Scissors, Bath, PawPrint, Sparkles, Scissors, PawPrint, Sparkles];
 
-function ServiceCard({ s, Icon, i }: { s: (typeof services)[number]; Icon: typeof Scissors; i: number }) {
+function ServiceCard({
+  s,
+  Icon,
+  i,
+}: {
+  s: (typeof services)[number];
+  Icon: typeof Scissors;
+  i: number;
+}) {
   const [open, setOpen] = useState(false);
+  const showcase = showcaseByService.get(s.name);
 
   return (
     <motion.div
@@ -35,6 +46,11 @@ function ServiceCard({ s, Icon, i }: { s: (typeof services)[number]; Icon: typeo
         transition={{ duration: 0.3 }}
         className="relative"
       >
+        {showcase && (
+          <span className="absolute right-0 top-0 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-gold">
+            Before &amp; After
+          </span>
+        )}
         <div className="size-12 rounded-xl bg-gradient-to-br from-gold/30 to-gold-soft/40 grid place-items-center mb-5 group-hover:scale-110 transition-transform">
           <Icon className="size-5 text-foreground" strokeWidth={1.5} />
         </div>
@@ -57,9 +73,23 @@ function ServiceCard({ s, Icon, i }: { s: (typeof services)[number]; Icon: typeo
         <div>
           <h3 className="font-display text-2xl text-cream">{s.name}</h3>
           <p className="text-xs text-gold tracking-wider uppercase mt-1">{s.price}</p>
-          <p className="mt-5 text-sm text-cream/85 leading-relaxed">{(s as { details?: string }).details ?? s.desc}</p>
+          <p className="mt-5 text-sm text-cream/85 leading-relaxed">
+            {(s as { details?: string }).details ?? s.desc}
+          </p>
         </div>
-        <div className="mt-4 text-[11px] uppercase tracking-[0.2em] text-gold/80">Tap to close</div>
+        {showcase ? (
+          <a
+            href={`#${showcase.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="mt-4 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-gold hover:text-cream transition-colors"
+          >
+            See the results <ArrowDown className="size-3.5" />
+          </a>
+        ) : (
+          <div className="mt-4 text-[11px] uppercase tracking-[0.2em] text-gold/80">
+            Tap to close
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
@@ -84,9 +114,14 @@ export function ServicesGrid({ limit }: { limit?: number }) {
         })}
       </div>
 
+      {!limit && <ServiceShowcase />}
+
       {limit && (
         <div className="mt-12 text-center">
-          <Link to="/services" className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.2em] hover:text-gold">
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.2em] hover:text-gold"
+          >
             See the full menu →
           </Link>
         </div>
