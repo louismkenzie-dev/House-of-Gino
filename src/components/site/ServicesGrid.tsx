@@ -114,7 +114,7 @@ export function ServicesGrid({ limit }: { limit?: number }) {
         })}
       </div>
 
-      {!limit && <ServiceShowcase />}
+      <ServiceShowcase />
 
       {limit && (
         <div className="mt-12 text-center">
